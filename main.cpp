@@ -4,12 +4,15 @@
 //Default array initialization
 //
 //auto & ref in for
+//inclass member initialization
+//integer_sequence 
 
 #include <iostream>
 #include <array>
 #include <functional>
 #include <utility>
-
+#include <vector>
+#include <cassert>
 
 using namespace std;
 
@@ -21,13 +24,16 @@ typedef pair<int, int> Location; //x,y
 
 struct Cell
 {
-    Cell( int id = -1 ) : id_( id ) {}
+    //Cell( int id = DEFAULT_CELL_ID ) : id_( id ) {}
 
     void printCell() const;
 
-    int id_ ;
+    int id_ = DEFAULT_CELL_ID ;
 
     Location location_;
+
+    typedef vector<Location> adjacentLocs_;
+    static const int DEFAULT_CELL_ID = -1;
 };
 
 void Cell::printCell() const
@@ -58,6 +64,18 @@ void printCont( array<reference_wrapper<T>,N>& c )
 
 typedef array< Cell, boardSize > BoardType;
 
+void initAdjacentLocs( Cell & cell )
+{
+    assert( cell.id_ != Cell::DEFAULT_CELL_ID );
+
+    for ( int i=0; i<2; ++i ) {
+        for ( jnt j=0; j<2; ++j ) {
+            if ( cell.id_ == 
+
+        }
+    }
+}
+
 void initBoard( BoardType & board )
 {
     for ( int i=0; i<boardDimention; ++i )
@@ -65,6 +83,7 @@ void initBoard( BoardType & board )
 
             board[i*boardDimention + j].location_.first = i;
             board[i*boardDimention + j].location_.second = j;
+
 
             board[i*boardDimention + j].id_ = i*boardDimention + j;
         }
