@@ -1,17 +1,3 @@
-#include <iostream>
-#include <array>
-#include <functional>
-
-struct Cell
-{
-    Cell( int id = -1 ) : id_( id ) {}
-
-    int id_ ;
-    int x_;
-    int y_;
-};
-
-using namespace std;
 
 //Initialization of large arrays
 //Initialization of arrays as a member
@@ -19,8 +5,33 @@ using namespace std;
 //
 //auto & ref in for
 
+#include <iostream>
+#include <array>
+#include <functional>
+#include <utility>
+
+
+using namespace std;
+
+
 const int boardDimention = 2;
 const int boardSize = boardDimention*boardDimention;
+
+struct Cell
+{
+    Cell( int id = -1 ) : id_( id ) {}
+
+    void printCell() const;
+
+    int id_ ;
+    int x_;
+    int y_;
+};
+
+void Cell::printCell() const
+{
+    cout << "id " << id_ << "[" << x_ << ":" << y_ << "}" << endl ;
+}
 
 //template <typename T>
 //void printCont( T& c )
@@ -32,16 +43,14 @@ const int boardSize = boardDimention*boardDimention;
 template <typename T,long unsigned int N>
 void printCont( array<T,N>& c )
 {
-    for ( const auto & x : c ) {
-        cout << x.id_ << "[" << x.x_ << ":" << x.y_ << "]" << endl;
-    }
+    for ( const auto & x : c ) x.printCell();
     cout << "..." << endl;
 }
 
 template <typename T,long unsigned int N>
 void printCont( array<reference_wrapper<T>,N>& c )
 {
-    for ( const auto & x : c ) cout << x.get().id_ << endl;
+    for ( const auto & x : c ) x.get().printCell() ;
     cout << "..." << endl;
 }
 
@@ -54,6 +63,8 @@ void initBoard( BoardType & board )
 
             board[i*boardDimention + j].x_ = i;
             board[i*boardDimention + j].y_ = j;
+
+            board[i*boardDimention + j].id_ = i*boardDimention + j;
         }
 }
 
