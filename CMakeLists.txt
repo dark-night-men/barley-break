@@ -1,22 +1,22 @@
 
 #cmake_minimum_required (VERSION 2.6)
 cmake_minimum_required (VERSION 2.8)
-project (bre C CXX)
-#add_executable(bre main.cpp)
+project (brk C CXX)
+#add_executable(brk main.cpp)
 
 #PROJECT ( Test CXX )
 #CMAKE_MINIMUM_REQUIRED ( VERSION 2.8 )
 FIND_PACKAGE ( Threads REQUIRED )
 #ADD_EXECUTABLE ( test test.cpp )
-add_executable(bre main.cpp)
-TARGET_LINK_LIBRARIES ( bre ${CMAKE_THREAD_LIBS_INIT} )
+add_executable(brk main.cpp)
+TARGET_LINK_LIBRARIES ( brk ${CMAKE_THREAD_LIBS_INIT} )
 
 #set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_BUILD_TYPE Debug)
 
-#target_compile_features(bre PRIVATE cxx_range_for)
-target_compile_features(bre PRIVATE 
+#target_compile_features(brk PRIVATE cxx_range_for)
+target_compile_features(brk PRIVATE 
 
     #cxx_aggregate_default_initializers
     cxx_alias_templates
