@@ -17,6 +17,8 @@ using namespace std;
 const int boardDimention = 2;
 const int boardSize = boardDimention*boardDimention;
 
+typedef pair<int, int> Location; //x,y
+
 struct Cell
 {
     Cell( int id = -1 ) : id_( id ) {}
@@ -24,13 +26,13 @@ struct Cell
     void printCell() const;
 
     int id_ ;
-    int x_;
-    int y_;
+
+    Location location_;
 };
 
 void Cell::printCell() const
 {
-    cout << "id " << id_ << "[" << x_ << ":" << y_ << "}" << endl ;
+    cout << "id " << id_ << "[" << location_.first << ":" << location_.second << "}" << endl ;
 }
 
 //template <typename T>
@@ -61,8 +63,8 @@ void initBoard( BoardType & board )
     for ( int i=0; i<boardDimention; ++i )
         for ( int j=0; j<boardDimention; ++j ) {
 
-            board[i*boardDimention + j].x_ = i;
-            board[i*boardDimention + j].y_ = j;
+            board[i*boardDimention + j].location_.first = i;
+            board[i*boardDimention + j].location_.second = j;
 
             board[i*boardDimention + j].id_ = i*boardDimention + j;
         }
