@@ -8,30 +8,70 @@
 using namespace std;
 
 
-const int boardDimension = 2;
-const int boardSize = boardDimension*boardDimension;
+//const int boardDimension = 2;
+//const int boardSize = boardDimension*boardDimension;
 
-typedef pair<int, int> Location; //x,y
+//typedef pair<int, int> Location; //y,x row,column
+using Location = pair<int, int>; //y,x row,column
 
-struct Cell
+using AdjacentLocs = vector<Location>;
+
+enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
+    , Left, Top, Right, Bottom, Common };
+
+class Board;
+class Cell
 {
-    //Cell( int id = DEFAULT_CELL_ID ) : m_id( id ) {}
+
+public:
+    Cell( Board & board );
 
     void printCell() const;
+    const Board & board() const;
+    int id() const;
+    void setId( int );
+
+    static const int DEFAULT_CELL_ID = -1;
+
+    CellKind cellKind() const;
+    void setCellKind( CellKind cellKind );
+
+    Location location() const;
+    void setLocation( const Location & location );
+
+private:
 
     int m_id = DEFAULT_CELL_ID ;
 
     Location m_location;
 
-    typedef vector<Location> m_adjacentLocs;
-    static const int DEFAULT_CELL_ID = -1;
+    AdjacentLocs m_adjacentLocs;
 
-    enum class CellKind { Undefined, Angle, Border, Common };
     CellKind m_cellKind = CellKind::Undefined;
 
+    reference_wrapper<Board> m_board;
 };
 
-string cellKind2String( Cell::CellKind cellKind );
+class Board
+{
+
+public:
+    Board();
+    Board( int dimension );
+
+    int boardDimension() const { return m_boardDimension; }
+    int boardSize() const { return m_boardSize; }
+
+private:
+    void initBoard();
+
+    int m_boardDimension = 2;
+    int m_boardSize = -1;
+
+    vector<Cell> m_cells;
+};
+
+string cellKind2String( CellKind cellKind );
 
 
 //template <typename T>
@@ -55,9 +95,6 @@ void printCont( array<reference_wrapper<T>,N>& c )
     cout << "..." << endl;
 }
 
-typedef array< Cell, boardSize > BoardType;
-
 void initAdjacentLocs( Cell & cell );
-void initBoard( BoardType & board );
 
 int testCatch();
