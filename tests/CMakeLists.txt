@@ -1,14 +1,12 @@
-#cmake_minimum_required (VERSION 2.6)
 cmake_minimum_required (VERSION 2.8)
 FIND_PACKAGE ( Threads REQUIRED )
 
 add_executable(rnt 
-    test_main.cpp
+    tests_main.cpp
     tests_cell.cpp
 )
 
 #TARGET_LINK_LIBRARIES ( rnt ${CMAKE_THREAD_LIBS_INIT} )
-#target_link_libraries (rnt LINK_PUBLIC libbreaks)
 target_link_libraries (rnt LINK_PUBLIC breaks)
 
 #set (CMAKE_CXX_STANDARD 14)
