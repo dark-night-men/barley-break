@@ -28,7 +28,11 @@ struct Cell
 
     enum class CellKind { Undefined, Angle, Border, Common };
     CellKind m_cellKind = CellKind::Undefined;
+
 };
+
+string cellKind2String( Cell::CellKind cellKind );
+
 
 //template <typename T>
 //void printCont( T& c )

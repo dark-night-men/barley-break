@@ -24,11 +24,13 @@ void initAdjacentLocs( Cell & cell )
     cell.printCell();
 
     assert( cell.m_id != Cell::DEFAULT_CELL_ID );
+    assert( cell.m_cellKind == Cell::CellKind::Undefined );
 
     if ( cell.m_location.first % ( boardDimension - 1 ) == 0 
             && cell.m_location.second % ( boardDimension - 1 ) == 0 ) {
 
-        cout << "Angle item" << endl;
+        cell.m_cellKind = Cell::CellKind::Angle;
+        cout << cellKind2String(cell.m_cellKind) << " item" << endl;
     }
     else if ( cell.m_location.first == 0 && cell.m_location.second % ( boardDimension - 1 ) != 0 ) {
 
@@ -60,4 +62,25 @@ void initBoard( BoardType & board )
 int testCatch()
 {
     return 33;
+}
+
+string cellKind2String( Cell::CellKind cellKind )
+{
+    string result;
+
+    switch ( cellKind )
+    {
+        case Cell::CellKind::Undefined : result = "Undefined" ;
+             break;
+        case Cell::CellKind::Angle : result = "Angle" ;
+             break;
+        case Cell::CellKind::Border : result = "Border" ;
+             break;
+        case Cell::CellKind::Common : result = "Common" ;
+             break;
+        default :
+            assert( 0 );
+    }
+
+    return result;
 }
