@@ -15,22 +15,25 @@ typedef pair<int, int> Location; //x,y
 
 struct Cell
 {
-    //Cell( int id = DEFAULT_CELL_ID ) : id_( id ) {}
+    //Cell( int id = DEFAULT_CELL_ID ) : m_id( id ) {}
 
     void printCell() const;
 
-    int id_ = DEFAULT_CELL_ID ;
+    int m_id = DEFAULT_CELL_ID ;
 
-    Location location_;
+    Location m_location;
 
-    typedef vector<Location> adjacentLocs_;
+    typedef vector<Location> m_adjacentLocs;
     static const int DEFAULT_CELL_ID = -1;
+
+    enum class CellKind { Undefined, Angle, Border, Common };
+    CellKind m_cellKind = CellKind::Undefined;
 };
 
 //template <typename T>
 //void printCont( T& c )
 //{
-//    for ( const auto & x : c ) cout << x.get().id_ << endl;
+//    for ( const auto & x : c ) cout << x.get().m_id << endl;
 //    cout << "..." << endl;
 //}
 

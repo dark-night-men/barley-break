@@ -33,11 +33,11 @@ int main()
     cout << "Hello " << endl;
     cout << "boardSize = " << boardSize << endl;
 
-    //for ( cells : x ) cout << x.id_ << endl;
-    //for ( x : cells ) cout << x.id_ << endl;
+    //for ( cells : x ) cout << x.m_id << endl;
+    //for ( x : cells ) cout << x.m_id << endl;
     printCont( cellsRefs );
 
-    cellsRefs[2].get().id_ = 22;
+    cellsRefs[2].get().m_id = 22;
 
     printCont( cells );
 }
