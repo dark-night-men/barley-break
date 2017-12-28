@@ -16,6 +16,10 @@ using AdjacentLocs = vector<Location>;
 enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
     , Left, Top, Right, Bottom, Common };
 
+class TestsTool
+{
+};
+
 template <int T_BoardDimension >
 class Board;
 
@@ -51,6 +55,8 @@ private:
     CellKind m_cellKind = CellKind::Undefined;
 
     Board< T_BoardDimension > * m_board = nullptr;
+
+    friend class TestsTool;
 };
 
 template <int T_BoardDimension = 2>
@@ -137,7 +143,8 @@ const Board<T_BoardDimension> & Cell<T_BoardDimension>::board() const
 template <int T_BoardDimension>
 void Cell<T_BoardDimension>::printCell() const
 {
-    cout << "id " << m_id << "[" << m_location.first << ":" << m_location.second << "]" << endl ;
+    cout << "id " << m_id << "[" << m_location.first << ":" << m_location.second << "] "
+        << cellKind2String( cellKind() ) << endl;
 }
 
 template <int T_BoardDimension>
@@ -190,43 +197,43 @@ void initAdjacentLocs( Cell<T_BoardDimension> & cell )
     assert( cell.id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
     assert( cell.cellKind() == CellKind::Undefined );
 
-    if ( cell.location().first == 0 and cell.location().second == 0 ) {
+    Location location = cell.location();
+
+    if ( location.first == 0 and location.second == 0 ) {
 
         cell.setCellKind( CellKind::TopLeft );
     }
-    else if ( cell.location().first == 0 and cell.location().second == boardDimension -1 ) {
+    else if ( location.first == 0 and location.second == boardDimension -1 ) {
 
         cell.setCellKind( CellKind::TopRight );
     }
-    else if ( cell.location().first == boardDimension -1 and cell.location().second == 0 ) {
+    else if ( location.first == boardDimension -1 and location.second == 0 ) {
 
         cell.setCellKind( CellKind::BottomLeft );
     }
-    else if ( cell.location().first == boardDimension -1 and cell.location().second == boardDimension -1 ) {
+    else if ( location.first == boardDimension -1 and location.second == boardDimension -1 ) {
 
         cell.setCellKind( CellKind::BottomRight );
     }
-    else if ( cell.location().first == 0 ) {
+    else if ( location.first == 0 ) {
 
         cell.setCellKind( CellKind::Top );
     }
-    else if ( cell.location().first == boardDimension -1 ) {
+    else if ( location.first == boardDimension -1 ) {
 
         cell.setCellKind( CellKind::Bottom );
     }
-    else if ( cell.location().second  == 0 ) {
+    else if ( location.second  == 0 ) {
 
         cell.setCellKind( CellKind::Left );
     }
-    if ( cell.location().second == boardDimension - 1 ) {
+    else if ( location.second == boardDimension - 1 ) {
 
         cell.setCellKind( CellKind::Right );
     }
     else {
         cell.setCellKind( CellKind::Common );
     }
-
-    cout << cellKind2String(cell.cellKind()) << " item" << endl;
 
 }
 

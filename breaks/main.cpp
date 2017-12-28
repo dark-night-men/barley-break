@@ -28,5 +28,5 @@ int main()
 {
     cout << "Hello " << endl;
 
-    Board<> board;
+    Board<4> board;
 }
