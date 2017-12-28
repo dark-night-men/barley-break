@@ -21,8 +21,9 @@ TEST_CASE( "Testing catch", "[catch test]" )
 
 TEST_CASE( "Cell adjacent locations init", "[cell]" )
 {
-    Board board;
-    Cell cell( board );
+    std::shared_ptr< Board<> > sBoard = make_shared< Board<> >( Board<>() );
+    //Cell<> cell( make_shared<Board<>>( Board<>() ) );
+    Cell<> cell;
 
     REQUIRE( cell.cellKind() == CellKind::Undefined );
 }

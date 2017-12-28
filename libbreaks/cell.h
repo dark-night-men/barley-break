@@ -8,11 +8,6 @@
 
 using namespace std;
 
-
-//const int boardDimension = 2;
-//const int boardSize = boardDimension*boardDimension;
-
-//typedef pair<int, int> Location; //y,x row,column
 using Location = pair<int, int>; //y,x row,column
 
 using AdjacentLocs = vector<Location>;
@@ -20,15 +15,15 @@ using AdjacentLocs = vector<Location>;
 enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
     , Left, Top, Right, Bottom, Common };
 
-template <int T_BoardDimension>
+template <int T_BoardDimension >
 class Board;
 
-template <int T_BoardDimension>
+template <int T_BoardDimension = 2>
 class Cell
 {
 
 public:
-    //Cell( Board & board );
+    Cell( shared_ptr<Board<T_BoardDimension>> board = nullptr );
 
     void printCell() const;
     const Board<T_BoardDimension> & board() const;
@@ -56,13 +51,11 @@ private:
     shared_ptr<Board< T_BoardDimension> > m_board;
 };
 
-template <int T_BoardDimension>
+template <int T_BoardDimension = 2>
 class Board
 {
 
 public:
-    //Board();
-    //Board( int dimension );
 
     int boardDimension() const { return m_boardDimension; }
     int boardSize() const { return m_boardSize; }
@@ -73,19 +66,11 @@ private:
     static const int m_boardDimension = T_BoardDimension;
     static const int m_boardSize = T_BoardDimension*T_BoardDimension;
 
-    //vector<Cell> m_cells;
     array<Cell<T_BoardDimension>, m_boardSize> m_cells;
 };
 
 string cellKind2String( CellKind cellKind );
 
-
-//template <typename T>
-//void printCont( T& c )
-//{
-//    for ( const auto & x : c ) cout << x.get().m_id << endl;
-//    cout << "..." << endl;
-//}
 
 template <typename T,long unsigned int N>
 void printCont( array<T,N>& c )
@@ -101,7 +86,126 @@ void printCont( array<reference_wrapper<T>,N>& c )
     cout << "..." << endl;
 }
 
-template <int T_BoardDimension>
+template <int T_BoardDimension = 2>
 void initAdjacentLocs( Cell<T_BoardDimension> & cell );
 
 int testCatch();
+
+template <int T_BoardDimension>
+void Board<T_BoardDimension>::initBoard()
+{
+
+    //fill_n( m_cells.begin(), boardSize(), Cell( *this ));
+
+    //for ( int i=0; i<m_boardDimension; ++i )
+    //    for ( int j=0; j<m_boardDimension; ++j ) {
+
+    //        m_cells[i*m_boardDimension + j].setLocation( make_pair(i,j) );
+    //        m_cells[i*m_boardDimension + j].setId( i*m_boardDimension + j );
+    //   }
+}
+
+template <int T_BoardDimension>
+Cell<T_BoardDimension>::Cell( shared_ptr<Board<T_BoardDimension>> board )
+    :m_board( board )
+{
+}
+
+template <int T_BoardDimension>
+const Board<T_BoardDimension> & Cell<T_BoardDimension>::board() const
+{
+    return m_board;
+}
+
+template <int T_BoardDimension>
+void Cell<T_BoardDimension>::printCell() const
+{
+    cout << "id " << m_id << "[" << m_location.first << ":" << m_location.second << "}" << endl ;
+}
+
+template <int T_BoardDimension>
+int Cell<T_BoardDimension>::id() const
+{
+    return m_id;
+}
+
+template <int T_BoardDimension>
+void Cell<T_BoardDimension>::setId( int id )
+{
+    m_id = id;
+}
+
+template <int T_BoardDimension>
+CellKind Cell<T_BoardDimension>::cellKind() const
+{
+    return m_cellKind;
+}
+
+template <int T_BoardDimension>
+void Cell<T_BoardDimension>::setCellKind( CellKind cellKind )
+{
+    m_cellKind = cellKind;
+}
+
+template <int T_BoardDimension>
+Location Cell<T_BoardDimension>::location() const
+{
+    return m_location;
+}
+
+template <int T_BoardDimension>
+void Cell<T_BoardDimension>::setLocation( const Location & location )
+{
+    m_location = location;
+}
+
+template <int T_BoardDimension>
+void initAdjacentLocs( Cell<T_BoardDimension> & cell )
+{
+    const int boardDimension = cell.board().boardDimension();
+    cell.printCell();
+
+    assert( cell.id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
+    assert( cell.cellKind() == CellKind::Undefined );
+
+    if ( cell.location().first == 0 and cell.location().second == 0 ) {
+
+        cell.setCellKind( CellKind::TopLeft );
+    }
+    else if ( cell.location().first == 0 and cell.location().second == boardDimension -1 ) {
+
+        cell.setCellKind( CellKind::TopRight );
+    }
+    else if ( cell.location().first == boardDimension -1 and cell.location().second == 0 ) {
+
+        cell.setCellKind( CellKind::BottomLeft );
+    }
+    else if ( cell.location().first == boardDimension -1 and cell.location().second == boardDimension -1 ) {
+
+        cell.setCellKind( CellKind::BottomRight );
+    }
+    else if ( cell.location().first == 0 ) {
+
+        cell.setCellKind( CellKind::Top );
+    }
+    else if ( cell.location().first == boardDimension -1 ) {
+
+        cell.setCellKind( CellKind::Bottom );
+    }
+    else if ( cell.location().second  == 0 ) {
+
+        cell.setCellKind( CellKind::Left );
+    }
+    if ( cell.location().second == boardDimension - 1 ) {
+
+        cell.setCellKind( CellKind::Right );
+    }
+    else {
+        cell.setCellKind( CellKind::Common );
+    }
+
+    cout << cellKind2String(cell.cellKind()) << " item" << endl;
+
+}
+
+
