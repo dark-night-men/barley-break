@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <memory>
 
 using namespace std;
 
@@ -19,15 +20,18 @@ using AdjacentLocs = vector<Location>;
 enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
     , Left, Top, Right, Bottom, Common };
 
+template <int T_BoardDimnsion>
 class Board;
+
+template <int T_BoardDimnsion>
 class Cell
 {
 
 public:
-    Cell( Board & board );
+    //Cell( Board & board );
 
     void printCell() const;
-    const Board & board() const;
+    const Board<T_BoardDimnsion> & board() const;
     int id() const;
     void setId( int );
 
@@ -49,15 +53,16 @@ private:
 
     CellKind m_cellKind = CellKind::Undefined;
 
-    reference_wrapper<Board> m_board;
+    shared_ptr<Board< T_BoardDimnsion> > m_board;
 };
 
+template <int T_BoardDimnsion>
 class Board
 {
 
 public:
-    Board();
-    Board( int dimension );
+    //Board();
+    //Board( int dimension );
 
     int boardDimension() const { return m_boardDimension; }
     int boardSize() const { return m_boardSize; }
@@ -65,10 +70,11 @@ public:
 private:
     void initBoard();
 
-    int m_boardDimension = 2;
-    int m_boardSize = -1;
+    static const int m_boardDimension = T_BoardDimnsion;
+    static const int m_boardSize = T_BoardDimnsion*T_BoardDimnsion;
 
-    vector<Cell> m_cells;
+    //vector<Cell> m_cells;
+    array<Cell<T_BoardDimnsion>, m_boardSize> m_cells;
 };
 
 string cellKind2String( CellKind cellKind );
@@ -95,6 +101,7 @@ void printCont( array<reference_wrapper<T>,N>& c )
     cout << "..." << endl;
 }
 
-void initAdjacentLocs( Cell & cell );
+template <int T_BoardDimnsion>
+void initAdjacentLocs( Cell<T_BoardDimnsion> & cell );
 
 int testCatch();
