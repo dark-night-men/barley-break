@@ -7,7 +7,10 @@
 //inclass member initialization
 //integer_sequence 
 //constructor delegation
-//reference_wrapper member
+//reference_wrapper as a  member
+//shared_ptr as a member
+//
+//array as a member. array initialization
 
 #include "../tests/catch.hpp"
 #include "../libbreaks/cell.h"
