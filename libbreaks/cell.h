@@ -207,6 +207,8 @@ void initAdjacentLocs( Cell<T_BoardDimension> & cell )
     if ( location.first == 0 and location.second == 0 ) {
 
         cell.setCellKind( CellKind::TopLeft );
+        cell.m_adjacentLocs.push_back( make_location( location.first, location.second + 1 ) );
+        cell.m_adjacentLocs.push_back( make_location( location.first + 1, location.second ) );
     }
     else if ( location.first == 0 and location.second == boardDimension -1 ) {
 
