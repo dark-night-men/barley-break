@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Location make_location( int i, int j ) { return make_pair( i, j ); }
+Location make_location( size_t i, size_t j ) { return make_pair( i, j ); }
 
 string cellKind2String( CellKind cellKind )
 {

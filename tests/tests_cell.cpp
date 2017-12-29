@@ -38,6 +38,10 @@ TEST_CASE( "cellAt", "[cell]" )
     REQUIRE( board.cellAt(0,0).cellKind() == CellKind::TopLeft ) ;
     REQUIRE( board.cellAt(0,0).id() == board.cellAt(0).id() ) ;
     REQUIRE( 0 == board.cellAt(0).id() ) ;
+
+    REQUIRE( board.cellAt(1,1).cellKind() == CellKind::BottomRight ) ;
+    REQUIRE( board.cellAt(1,1).id() == board.cellAt(3).id() ) ;
+    REQUIRE( 3 == board.cellAt(3).id() ) ;
 }
 
 TEST_CASE( "Cell adjacent locations init", "[cell]" )

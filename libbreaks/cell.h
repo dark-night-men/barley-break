@@ -9,8 +9,8 @@
 
 using namespace std;
 
-using Location = pair<int, int>; //y,x row,column
-Location make_location( int i, int j );
+using Location = pair<size_t, size_t>; //y,x row,column
+Location make_location( size_t i, size_t j );
 
 using AdjacentLocs = vector<Location>;
 
@@ -21,10 +21,10 @@ class TestsTool
 {
 };
 
-template <int T_BoardDimension >
+template <size_t T_BoardDimension >
 class Board;
 
-template <int T_BoardDimension = 2>
+template <size_t T_BoardDimension = 2>
 class Cell
 {
 
@@ -34,10 +34,10 @@ public:
     void printCell() const;
     const Board<T_BoardDimension> & board() const;
     void setBoard( Board<T_BoardDimension> * board );
-    int id() const;
-    void setId( int );
+    size_t id() const;
+    void setId( size_t );
 
-    static const int DEFAULT_CELL_ID = -1;
+    static const size_t DEFAULT_CELL_ID = -1;
 
     CellKind cellKind() const;
     void setCellKind( CellKind cellKind );
@@ -47,7 +47,7 @@ public:
 
 private:
 
-    int m_id = DEFAULT_CELL_ID ;
+    size_t m_id = DEFAULT_CELL_ID ;
 
     Location m_location;
 
@@ -60,27 +60,27 @@ private:
     friend class TestsTool;
 };
 
-template <int T_BoardDimension = 2>
+template <size_t T_BoardDimension = 2>
 class Board
 {
 
 public:
     Board();
 
-    int boardDimension() const { return m_boardDimension; }
-    int boardSize() const { return m_boardSize; }
+    size_t boardDimension() const { return m_boardDimension; }
+    size_t boardSize() const { return m_boardSize; }
 
-    Location index2Loc( int i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
-    int loc2Index( int i, int j ) const { return m_boardDimension * i  + j; }
+    Location index2Loc( size_t i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
+    size_t loc2Index( size_t i, size_t j ) const { return m_boardDimension * i  + j; }
 
-    const Cell<T_BoardDimension> & cellAt( int i ) const { return m_cells.at( i ); }
-    const Cell<T_BoardDimension> & cellAt( int i, int j ) const { return m_cells.at( loc2Index( i, j ) ); }
+    const Cell<T_BoardDimension> & cellAt( size_t i ) const { return m_cells.at( i ); }
+    const Cell<T_BoardDimension> & cellAt( size_t i, size_t j ) const { return m_cells.at( loc2Index( i, j ) ); }
 
 private:
     void initBoard();
 
-    static const int m_boardDimension = T_BoardDimension;
-    static const int m_boardSize = T_BoardDimension*T_BoardDimension;
+    static const size_t m_boardDimension = T_BoardDimension;
+    static const size_t m_boardSize = T_BoardDimension*T_BoardDimension;
 
     array<Cell<T_BoardDimension>, m_boardSize> m_cells;
 };
@@ -102,10 +102,10 @@ void printCont( array<reference_wrapper<T>,N>& c )
     cout << "..." << endl;
 }
 
-template <int T_BoardDimension = 2>
+template <size_t T_BoardDimension = 2>
 void initAdjacentLocs( Cell<T_BoardDimension> & cell );
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 Board<T_BoardDimension>::Board()
 {
     //debug
@@ -115,14 +115,14 @@ Board<T_BoardDimension>::Board()
     for_each( m_cells.cbegin(), m_cells.cend(), []( const Cell<T_BoardDimension> & c ) { c.printCell(); } );
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void Board<T_BoardDimension>::initBoard()
 {
 
-    for ( int i=0; i<m_boardDimension; ++i )
-        for ( int j=0; j<m_boardDimension; ++j ) {
+    for ( size_t i=0; i<m_boardDimension; ++i )
+        for ( size_t j=0; j<m_boardDimension; ++j ) {
 
-            int index = i*m_boardDimension + j;
+            size_t index = i*m_boardDimension + j;
             Cell<T_BoardDimension> & current = m_cells[index] ;
 
             current.setLocation( make_pair(i,j) );
@@ -133,70 +133,70 @@ void Board<T_BoardDimension>::initBoard()
        }
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 Cell<T_BoardDimension>::Cell( Board<T_BoardDimension> * board )
     :m_board( board )
 {
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 const Board<T_BoardDimension> & Cell<T_BoardDimension>::board() const
 {
     return *m_board;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::printCell() const
 {
     cout << "id " << m_id << "[" << m_location.first << ":" << m_location.second << "] "
         << cellKind2String( cellKind() ) << endl;
 }
 
-template <int T_BoardDimension>
-int Cell<T_BoardDimension>::id() const
+template <size_t T_BoardDimension>
+size_t Cell<T_BoardDimension>::id() const
 {
     return m_id;
 }
 
-template <int T_BoardDimension>
-void Cell<T_BoardDimension>::setId( int id )
+template <size_t T_BoardDimension>
+void Cell<T_BoardDimension>::setId( size_t id )
 {
     m_id = id;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 CellKind Cell<T_BoardDimension>::cellKind() const
 {
     return m_cellKind;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::setCellKind( CellKind cellKind )
 {
     m_cellKind = cellKind;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 Location Cell<T_BoardDimension>::location() const
 {
     return m_location;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::setLocation( const Location & location )
 {
     m_location = location;
 }
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::setBoard( Board<T_BoardDimension> * board )
 {
     m_board = board;
 }
 
-template <int T_BoardDimension>
+template <size_t T_BoardDimension>
 void initAdjacentLocs( Cell<T_BoardDimension> & cell )
 {
-    const int boardDimension = cell.board().boardDimension();
+    const size_t boardDimension = cell.board().boardDimension();
     cell.printCell();
 
     assert( cell.id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
