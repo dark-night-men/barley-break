@@ -10,6 +10,7 @@
 using namespace std;
 
 using Location = pair<int, int>; //y,x row,column
+Location make_location( int i, int j );
 
 using AdjacentLocs = vector<Location>;
 
@@ -69,6 +70,12 @@ public:
     int boardDimension() const { return m_boardDimension; }
     int boardSize() const { return m_boardSize; }
 
+    Location index2Loc( int i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
+    int loc2Index( int i, int j ) const { return m_boardDimension * i  + j; }
+
+    const Cell<T_BoardDimension> & cellAt( int i ) const { return m_cells.at( i ); }
+    const Cell<T_BoardDimension> & cellAt( int i, int j ) const { return m_cells.at( loc2Index( i, j ) ); }
+
 private:
     void initBoard();
 
@@ -97,8 +104,6 @@ void printCont( array<reference_wrapper<T>,N>& c )
 
 template <int T_BoardDimension = 2>
 void initAdjacentLocs( Cell<T_BoardDimension> & cell );
-
-int testCatch();
 
 template <int T_BoardDimension>
 Board<T_BoardDimension>::Board()

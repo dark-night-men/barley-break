@@ -11,10 +11,7 @@
 
 using namespace std;
 
-int testCatch()
-{
-    return 33;
-}
+Location make_location( int i, int j ) { return make_pair( i, j ); }
 
 string cellKind2String( CellKind cellKind )
 {
