@@ -17,10 +17,6 @@ using AdjacentLocs = vector<Location>;
 enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
     , Left, Top, Right, Bottom, Common };
 
-class TestsTool
-{
-};
-
 template <size_t T_BoardDimension >
 class Board;
 
@@ -30,6 +26,8 @@ class Cell
 
 public:
     Cell( Board<T_BoardDimension> * board = nullptr );
+    void init( size_t index, Board<T_BoardDimension> * board );
+    void initAdjacentLocs();
 
     void printCell() const;
     const Board<T_BoardDimension> & board() const;
@@ -56,8 +54,6 @@ private:
     CellKind m_cellKind = CellKind::Undefined;
 
     Board< T_BoardDimension > * m_board = nullptr;
-
-    friend class TestsTool;
 };
 
 template <size_t T_BoardDimension = 2>
@@ -102,9 +98,6 @@ void printCont( array<reference_wrapper<T>,N>& c )
     cout << "..." << endl;
 }
 
-template <size_t T_BoardDimension = 2>
-void initAdjacentLocs( Cell<T_BoardDimension> & cell );
-
 template <size_t T_BoardDimension>
 Board<T_BoardDimension>::Board()
 {
@@ -118,25 +111,26 @@ Board<T_BoardDimension>::Board()
 template <size_t T_BoardDimension>
 void Board<T_BoardDimension>::initBoard()
 {
-
-    for ( size_t i=0; i<m_boardDimension; ++i )
-        for ( size_t j=0; j<m_boardDimension; ++j ) {
-
-            size_t index = i*m_boardDimension + j;
-            Cell<T_BoardDimension> & current = m_cells[index] ;
-
-            current.setLocation( make_pair(i,j) );
-            current.setId( index );
-            current.setBoard( this );
-
-            initAdjacentLocs( current );
-       }
+    size_t i = 0; //use iterator diff instead 
+    for( auto & cell : m_cells ) {
+        cell.init( i, this );
+        ++i;
+    }
 }
 
 template <size_t T_BoardDimension>
 Cell<T_BoardDimension>::Cell( Board<T_BoardDimension> * board )
     :m_board( board )
 {
+}
+
+template <size_t T_BoardDimension>
+void Cell<T_BoardDimension>::init( size_t index, Board<T_BoardDimension> * board )
+{
+    setId( index );
+    setBoard( board );
+    setLocation( board->index2Loc( index ) );
+    initAdjacentLocs();
 }
 
 template <size_t T_BoardDimension>
@@ -194,54 +188,53 @@ void Cell<T_BoardDimension>::setBoard( Board<T_BoardDimension> * board )
 }
 
 template <size_t T_BoardDimension>
-void initAdjacentLocs( Cell<T_BoardDimension> & cell )
+void Cell<T_BoardDimension>::initAdjacentLocs()
 {
-    const size_t boardDimension = cell.board().boardDimension();
-    cell.printCell();
+    printCell();
 
-    assert( cell.id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
-    assert( cell.cellKind() == CellKind::Undefined );
+    assert( id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
+    assert( cellKind() == CellKind::Undefined );
+    assert( m_board != nullptr );
 
-    Location location = cell.location();
+    size_t boardDimension = m_board->boardDimension();
 
-    if ( location.first == 0 and location.second == 0 ) {
+    if ( m_location.first == 0 and m_location.second == 0 ) {
 
-        cell.setCellKind( CellKind::TopLeft );
-        cell.m_adjacentLocs.push_back( make_location( location.first, location.second + 1 ) );
-        cell.m_adjacentLocs.push_back( make_location( location.first + 1, location.second ) );
+        setCellKind( CellKind::TopLeft );
+        m_adjacentLocs.push_back( make_location( m_location.first, m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
-    else if ( location.first == 0 and location.second == boardDimension -1 ) {
+    else if ( m_location.first == 0 and m_location.second == boardDimension -1 ) {
 
-        cell.setCellKind( CellKind::TopRight );
+        setCellKind( CellKind::TopRight );
     }
-    else if ( location.first == boardDimension -1 and location.second == 0 ) {
+    else if ( m_location.first == boardDimension -1 and m_location.second == 0 ) {
 
-        cell.setCellKind( CellKind::BottomLeft );
+        setCellKind( CellKind::BottomLeft );
     }
-    else if ( location.first == boardDimension -1 and location.second == boardDimension -1 ) {
+    else if ( m_location.first == boardDimension -1 and m_location.second == boardDimension -1 ) {
 
-        cell.setCellKind( CellKind::BottomRight );
+        setCellKind( CellKind::BottomRight );
     }
-    else if ( location.first == 0 ) {
+    else if ( m_location.first == 0 ) {
 
-        cell.setCellKind( CellKind::Top );
+        setCellKind( CellKind::Top );
     }
-    else if ( location.first == boardDimension -1 ) {
+    else if ( m_location.first == boardDimension -1 ) {
 
-        cell.setCellKind( CellKind::Bottom );
+        setCellKind( CellKind::Bottom );
     }
-    else if ( location.second  == 0 ) {
+    else if ( m_location.second  == 0 ) {
 
-        cell.setCellKind( CellKind::Left );
+        setCellKind( CellKind::Left );
     }
-    else if ( location.second == boardDimension - 1 ) {
+    else if ( m_location.second == boardDimension - 1 ) {
 
-        cell.setCellKind( CellKind::Right );
+        setCellKind( CellKind::Right );
     }
     else {
-        cell.setCellKind( CellKind::Common );
+        setCellKind( CellKind::Common );
     }
-
 }
 
 
