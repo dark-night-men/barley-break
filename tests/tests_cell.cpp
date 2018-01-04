@@ -46,10 +46,15 @@ TEST_CASE( "cellAt", "[cell]" )
 
 TEST_CASE( "Cell adjacent locations init", "[cell]" )
 {
-    Board<> board;
     Cell<> cell;
 
     REQUIRE( cell.cellKind() == CellKind::Undefined );
+
+    Board<> board;
+    const Cell<> & cellRef = board.cells().at(0);
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 1 );
 }
 
 //TEST_CASE( "Translate CellKind enum to string", "[cell]" )

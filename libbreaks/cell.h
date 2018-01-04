@@ -20,6 +20,15 @@ enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
 template <size_t T_BoardDimension >
 class Board;
 
+template <size_t T_BoardDimension >
+class Cell;
+
+template <size_t T_BoardDimension = 2>
+using AdjacentCells = array<Cell<T_BoardDimension>*,Board<T_BoardDimension>::boardSize()>;
+
+template <size_t T_BoardDimension = 2>
+using BoardCells = array<Cell<T_BoardDimension>,Board<T_BoardDimension>::boardSize()>;
+
 template <size_t T_BoardDimension = 2>
 class Cell
 {
@@ -27,7 +36,6 @@ class Cell
 public:
     Cell( Board<T_BoardDimension> * board = nullptr );
     void init( size_t index, Board<T_BoardDimension> * board );
-    void initAdjacentLocs();
 
     void printCell() const;
     const Board<T_BoardDimension> & board() const;
@@ -43,7 +51,10 @@ public:
     Location location() const;
     void setLocation( const Location & location );
 
+    const AdjacentLocs & adjLocs() const { return m_adjacentLocs; }
+
 private:
+    void initAdjacentLocs();
 
     size_t m_id = DEFAULT_CELL_ID ;
 
@@ -54,6 +65,8 @@ private:
     CellKind m_cellKind = CellKind::Undefined;
 
     Board< T_BoardDimension > * m_board = nullptr;
+
+    AdjacentCells<T_BoardDimension> m_adjacentCells;
 };
 
 template <size_t T_BoardDimension = 2>
@@ -63,8 +76,8 @@ class Board
 public:
     Board();
 
-    size_t boardDimension() const { return m_boardDimension; }
-    size_t boardSize() const { return m_boardSize; }
+    static constexpr size_t boardDimension() { return m_boardDimension; }
+    static constexpr size_t boardSize() { return m_boardSize; }
 
     Location index2Loc( size_t i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
     size_t loc2Index( size_t i, size_t j ) const { return m_boardDimension * i  + j; }
@@ -76,10 +89,21 @@ private:
     void initBoard();
 
     static const size_t m_boardDimension = T_BoardDimension;
-    static const size_t m_boardSize = T_BoardDimension*T_BoardDimension;
+    static constexpr const size_t m_boardSize = T_BoardDimension*T_BoardDimension;
 
-    array<Cell<T_BoardDimension>, m_boardSize> m_cells;
+    BoardCells<T_BoardDimension> m_cells;
+
+public:
+    const BoardCells<T_BoardDimension> & cells() const { return m_cells; }
 };
+
+template <size_t T_BoardDimension = 2 >
+class Turn
+{
+    array<size_t, Board<T_BoardDimension>::boardSize()> m_cellsState;
+    const Board<T_BoardDimension> & m_board;
+};
+
 
 string cellKind2String( CellKind cellKind );
 
@@ -102,10 +126,10 @@ template <size_t T_BoardDimension>
 Board<T_BoardDimension>::Board()
 {
     //debug
-    for_each( m_cells.cbegin(), m_cells.cend(), []( const Cell<T_BoardDimension> & c ) { c.printCell(); } );
+    for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
 
     initBoard();
-    for_each( m_cells.cbegin(), m_cells.cend(), []( const Cell<T_BoardDimension> & c ) { c.printCell(); } );
+    for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
 }
 
 template <size_t T_BoardDimension>
