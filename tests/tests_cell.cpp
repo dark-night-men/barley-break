@@ -55,7 +55,52 @@ TEST_CASE( "Cell adjacent locations init", "[cell]" )
 
     REQUIRE( cellRef.adjLocs().at(0).first == 0 );
     REQUIRE( cellRef.adjLocs().at(0).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 0 );
 }
+
+TEST_CASE( "Cell adjacent locations init item 1", "[cell]" )
+{
+
+    Board<> board;
+    const Cell<> & cellRef = board.cells().at(1);
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 0 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 1 );
+}
+
+TEST_CASE( "Cell adjacent locations init item 2", "[cell]" )
+{
+
+    Board<> board;
+    const Cell<> & cellRef = board.cells().at(2);
+
+    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 2 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 0 );
+}
+
+TEST_CASE( "Cell adjacent locations init item 3", "[cell]" )
+{
+
+    Board<> board;
+    const Cell<> & cellRef = board.cells().at(3);
+
+    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
+    REQUIRE( cellRef.adjLocs().at(0).second == board.boardDimension() - 2 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 2 );
+    REQUIRE( cellRef.adjLocs().at(1).second == board.boardDimension() - 1 );
+}
+
+
+
 
 //TEST_CASE( "Translate CellKind enum to string", "[cell]" )
 //{

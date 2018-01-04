@@ -231,14 +231,20 @@ void Cell<T_BoardDimension>::initAdjacentLocs()
     else if ( m_location.first == 0 and m_location.second == boardDimension -1 ) {
 
         setCellKind( CellKind::TopRight );
+        m_adjacentLocs.push_back( make_location( m_location.first, m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.first == boardDimension -1 and m_location.second == 0 ) {
 
         setCellKind( CellKind::BottomLeft );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
     }
     else if ( m_location.first == boardDimension -1 and m_location.second == boardDimension -1 ) {
 
         setCellKind( CellKind::BottomRight );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
     }
     else if ( m_location.first == 0 ) {
 
