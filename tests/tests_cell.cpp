@@ -52,6 +52,7 @@ TEST_CASE( "Cell adjacent locations init", "[cell]" )
 
     Board<> board;
     const Cell<> & cellRef = board.cells().at(0);
+    REQUIRE( cellRef.cellKind() == CellKind::TopLeft );
 
     REQUIRE( cellRef.adjLocs().at(0).first == 0 );
     REQUIRE( cellRef.adjLocs().at(0).second == 1 );
@@ -65,6 +66,7 @@ TEST_CASE( "Cell adjacent locations init item 1", "[cell]" )
 
     Board<> board;
     const Cell<> & cellRef = board.cells().at(1);
+    REQUIRE( cellRef.cellKind() == CellKind::TopRight );
 
     REQUIRE( cellRef.adjLocs().at(0).first == 0 );
     REQUIRE( cellRef.adjLocs().at(0).second == 0 );
@@ -78,6 +80,7 @@ TEST_CASE( "Cell adjacent locations init item 2", "[cell]" )
 
     Board<> board;
     const Cell<> & cellRef = board.cells().at(2);
+    REQUIRE( cellRef.cellKind() == CellKind::BottomLeft );
 
     REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
     REQUIRE( cellRef.adjLocs().at(0).second == 1 );
@@ -91,6 +94,7 @@ TEST_CASE( "Cell adjacent locations init item 3", "[cell]" )
 
     Board<> board;
     const Cell<> & cellRef = board.cells().at(3);
+    REQUIRE( cellRef.cellKind() == CellKind::BottomRight );
 
     REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
     REQUIRE( cellRef.adjLocs().at(0).second == board.boardDimension() - 2 );
@@ -98,6 +102,111 @@ TEST_CASE( "Cell adjacent locations init item 3", "[cell]" )
     REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 2 );
     REQUIRE( cellRef.adjLocs().at(1).second == board.boardDimension() - 1 );
 }
+
+TEST_CASE( "Cell adjacent locations init dim 3 item 1", "[cell]" )
+{
+
+    Board<3> board;
+
+    const Cell<3> & cellRef = board.cells().at(1);
+    REQUIRE( cellRef.cellKind() == CellKind::Top);
+
+    REQUIRE( cellRef.adjLocs().size() == 3 );
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 0 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 2 );
+
+    REQUIRE( cellRef.adjLocs().at(2).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(2).second == 1 );
+}
+
+TEST_CASE( "Cell adjacent locations init dim 3 item 3", "[cell]" )
+{
+
+    Board<3> board;
+
+    const Cell<3> & cellRef = board.cells().at(3);
+    REQUIRE( cellRef.cellKind() == CellKind::Left);
+
+    REQUIRE( cellRef.adjLocs().size() == 3 );
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 0 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(2).first == 2 );
+    REQUIRE( cellRef.adjLocs().at(2).second == 0 );
+}
+
+TEST_CASE( "Cell adjacent locations init dim 3 item 5", "[cell]" )
+{
+
+    Board<3> board;
+
+    const Cell<3> & cellRef = board.cells().at(5);
+    REQUIRE( cellRef.cellKind() == CellKind::Right);
+
+    REQUIRE( cellRef.adjLocs().size() == 3 );
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 2 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(2).first == 2 );
+    REQUIRE( cellRef.adjLocs().at(2).second == 2 );
+}
+
+TEST_CASE( "Cell adjacent locations init dim 3 item 7", "[cell]" )
+{
+
+    Board<3> board;
+
+    const Cell<3> & cellRef = board.cells().at(7);
+    REQUIRE( cellRef.cellKind() == CellKind::Bottom);
+
+    REQUIRE( cellRef.adjLocs().size() == 3 );
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 2 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 0 );
+
+    REQUIRE( cellRef.adjLocs().at(2).first == 2 );
+    REQUIRE( cellRef.adjLocs().at(2).second == 2 );
+}
+
+TEST_CASE( "Cell adjacent locations init dim 3 item 4", "[cell]" )
+{
+
+    Board<3> board;
+
+    const Cell<3> & cellRef = board.cells().at(4);
+    REQUIRE( cellRef.cellKind() == CellKind::Common);
+
+    REQUIRE( cellRef.adjLocs().size() == 4 );
+
+    REQUIRE( cellRef.adjLocs().at(0).first == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 1 );
+
+    REQUIRE( cellRef.adjLocs().at(1).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 0 );
+
+    REQUIRE( cellRef.adjLocs().at(2).first == 1 );
+    REQUIRE( cellRef.adjLocs().at(2).second == 2 );
+
+    REQUIRE( cellRef.adjLocs().at(3).first == 2 );
+    REQUIRE( cellRef.adjLocs().at(3).second == 1 );
+}
+
+
 
 
 

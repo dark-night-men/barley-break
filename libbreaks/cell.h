@@ -126,10 +126,10 @@ template <size_t T_BoardDimension>
 Board<T_BoardDimension>::Board()
 {
     //debug
-    for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
+    //for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
 
     initBoard();
-    for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
+    //for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
 }
 
 template <size_t T_BoardDimension>
@@ -214,7 +214,7 @@ void Cell<T_BoardDimension>::setBoard( Board<T_BoardDimension> * board )
 template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::initAdjacentLocs()
 {
-    printCell();
+    //printCell();
 
     assert( id() != Cell<T_BoardDimension>::DEFAULT_CELL_ID );
     assert( cellKind() == CellKind::Undefined );
@@ -249,21 +249,41 @@ void Cell<T_BoardDimension>::initAdjacentLocs()
     else if ( m_location.first == 0 ) {
 
         setCellKind( CellKind::Top );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.first == boardDimension -1 ) {
 
         setCellKind( CellKind::Bottom );
+
+        m_adjacentLocs.push_back( make_location( m_location.first - 1 , m_location.second ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
     }
     else if ( m_location.second  == 0 ) {
 
         setCellKind( CellKind::Left );
+
+        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.second == boardDimension - 1 ) {
 
         setCellKind( CellKind::Right );
+
+        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
     else {
         setCellKind( CellKind::Common );
+
+        m_adjacentLocs.push_back( make_location( m_location.first - 1 , m_location.second ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
     }
 }
 
