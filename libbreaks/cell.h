@@ -10,9 +10,17 @@
 using namespace std;
 
 using Location = pair<size_t, size_t>; //y,x row,column
+//TODO make_location -> make_pair
 Location make_location( size_t i, size_t j );
 
+template <typename T1, typename T2>
+std::ostream& operator << (std::ostream& strm, const std::pair<T1,T2>& p)
+{
+    return strm << "[" << p.first << "," << p.second << "]";
+}
+
 using AdjacentLocs = vector<Location>;
+
 
 enum class CellKind { Undefined, TopLeft, TopRight, BottomRight, BottomLeft
     , Left, Top, Right, Bottom, Common };
@@ -23,11 +31,12 @@ class Board;
 template <size_t T_BoardDimension >
 class Cell;
 
+const size_t MAX_ADJACENT_CELLS_NUMBER = 4;
 template <size_t T_BoardDimension = 2>
-using AdjacentCells = array<Cell<T_BoardDimension>*,Board<T_BoardDimension>::boardSize()>;
+using AdjacentCells = array<Cell<T_BoardDimension>*, MAX_ADJACENT_CELLS_NUMBER> ;
 
 template <size_t T_BoardDimension = 2>
-using BoardCells = array<Cell<T_BoardDimension>,Board<T_BoardDimension>::boardSize()>;
+using BoardCells = array<Cell<T_BoardDimension>, Board<T_BoardDimension>::boardSize() >;
 
 template <size_t T_BoardDimension = 2>
 class Cell
@@ -52,9 +61,11 @@ public:
     void setLocation( const Location & location );
 
     const AdjacentLocs & adjLocs() const { return m_adjacentLocs; }
+    const AdjacentCells<T_BoardDimension> & adjCells() const { return m_adjacentCells; }
 
 private:
     void initAdjacentLocs();
+    void initAdjacentCells();
 
     size_t m_id = DEFAULT_CELL_ID ;
 
@@ -81,12 +92,17 @@ public:
 
     Location index2Loc( size_t i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
     size_t loc2Index( size_t i, size_t j ) const { return m_boardDimension * i  + j; }
+    size_t loc2Index( const Location & loc ) const { return m_boardDimension * loc.first  + loc.second; }
 
     const Cell<T_BoardDimension> & cellAt( size_t i ) const { return m_cells.at( i ); }
     const Cell<T_BoardDimension> & cellAt( size_t i, size_t j ) const { return m_cells.at( loc2Index( i, j ) ); }
 
 private:
     void initBoard();
+
+    friend class Cell<T_BoardDimension>;
+
+    Cell<T_BoardDimension> * cell4Loc( const Location & loc ) { return &m_cells.data()[ loc2Index(loc) ]; }
 
     static const size_t m_boardDimension = T_BoardDimension;
     static constexpr const size_t m_boardSize = T_BoardDimension*T_BoardDimension;
@@ -136,6 +152,7 @@ template <size_t T_BoardDimension>
 void Board<T_BoardDimension>::initBoard()
 {
     size_t i = 0; //use iterator diff instead 
+    //TODO change for -> for_each
     for( auto & cell : m_cells ) {
         cell.init( i, this );
         ++i;
@@ -155,6 +172,7 @@ void Cell<T_BoardDimension>::init( size_t index, Board<T_BoardDimension> * board
     setBoard( board );
     setLocation( board->index2Loc( index ) );
     initAdjacentLocs();
+    initAdjacentCells();
 }
 
 template <size_t T_BoardDimension>
@@ -166,8 +184,7 @@ const Board<T_BoardDimension> & Cell<T_BoardDimension>::board() const
 template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::printCell() const
 {
-    cout << "id " << m_id << "[" << m_location.first << ":" << m_location.second << "] "
-        << cellKind2String( cellKind() ) << endl;
+    cout << "id " << m_id << " " << m_location << " " << cellKind2String( cellKind() ) << endl;
 }
 
 template <size_t T_BoardDimension>
@@ -209,6 +226,19 @@ template <size_t T_BoardDimension>
 void Cell<T_BoardDimension>::setBoard( Board<T_BoardDimension> * board )
 {
     m_board = board;
+}
+
+template <size_t T_BoardDimension>
+void Cell<T_BoardDimension>::initAdjacentCells()
+{
+
+    size_t i {0};
+    for_each( m_adjacentLocs.cbegin(), m_adjacentLocs.cend()
+            , [ this, &i ] (const Location & l) 
+            {
+                m_adjacentCells[ i++ ] = m_board->cell4Loc( l );
+            }
+    );
 }
 
 template <size_t T_BoardDimension>
