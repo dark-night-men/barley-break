@@ -11,35 +11,39 @@ add_library (
 
 target_include_directories (breaks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-#TARGET_LINK_LIBRARIES ( breaks ${CMAKE_THREAD_LIBS_INIT} )
 
-
-#set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_BUILD_TYPE Debug)
 
-#target_compile_features(brk PRIVATE cxx_range_for)
+add_definitions( -D_GLIBCXX_DEBUG )
+
 target_compile_features(breaks PRIVATE 
 
-    #cxx_aggregate_default_initializers
+    #cpp17
+    cxx_aggregate_default_initializers
     cxx_alias_templates
     cxx_alignas
     cxx_alignof
     cxx_attributes
-    #cxx_attribute_deprecated
+    #cpp17
+    cxx_attribute_deprecated
     cxx_auto_type
-    #cxx_binary_literals
+    #cpp17
+    cxx_binary_literals
     cxx_constexpr
-    #cxx_contextual_conversions
+    #cpp17
+    cxx_contextual_conversions
     cxx_decltype_incomplete_return_types
     cxx_decltype
-    #cxx_decltype_auto
+    #cpp17
+    cxx_decltype_auto
     cxx_default_function_template_args
     cxx_defaulted_functions
     cxx_defaulted_move_initializers
     cxx_delegating_constructors
     cxx_deleted_functions
-    #cxx_digit_separators
+    #cpp17
+    cxx_digit_separators
     cxx_enum_forward_declarations
     cxx_explicit_conversions
     cxx_extended_friend_declarations
@@ -61,8 +65,10 @@ target_compile_features(breaks PRIVATE
     cxx_range_for
     cxx_raw_string_literals
     cxx_reference_qualified_functions
-    #cxx_relaxed_constexpr
-    #cxx_return_type_deduction
+    #cpp17
+    cxx_relaxed_constexpr
+    #cpp17
+    cxx_return_type_deduction
     cxx_right_angle_brackets
     cxx_rvalue_references
     cxx_sizeof_member
@@ -74,7 +80,8 @@ target_compile_features(breaks PRIVATE
     cxx_uniform_initialization
     cxx_unrestricted_unions
     cxx_user_literals
-    #cxx_variable_templates
+    #cpp17
+    cxx_variable_templates
     cxx_variadic_macros
     cxx_variadic_templates
     cxx_template_template_parameters )
