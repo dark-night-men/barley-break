@@ -10,8 +10,6 @@
 using namespace std;
 
 using Location = pair<size_t, size_t>; //y,x row,column
-//TODO make_location -> make_pair
-Location make_location( size_t i, size_t j );
 
 template <typename T1, typename T2>
 std::ostream& operator << (std::ostream& strm, const std::pair<T1,T2>& p)
@@ -90,7 +88,7 @@ public:
     static constexpr size_t boardDimension() { return m_boardDimension; }
     static constexpr size_t boardSize() { return m_boardSize; }
 
-    Location index2Loc( size_t i ) const { return make_location( i / m_boardDimension , i % m_boardDimension ); }
+    Location index2Loc( size_t i ) const { return make_pair( i / m_boardDimension , i % m_boardDimension ); }
     size_t loc2Index( size_t i, size_t j ) const { return m_boardDimension * i  + j; }
     size_t loc2Index( const Location & loc ) const { return m_boardDimension * loc.first  + loc.second; }
 
@@ -255,65 +253,65 @@ void Cell<T_BoardDimension>::initAdjacentLocs()
     if ( m_location.first == 0 and m_location.second == 0 ) {
 
         setCellKind( CellKind::TopLeft );
-        m_adjacentLocs.push_back( make_location( m_location.first, m_location.second + 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first, m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.first == 0 and m_location.second == boardDimension -1 ) {
 
         setCellKind( CellKind::TopRight );
-        m_adjacentLocs.push_back( make_location( m_location.first, m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first, m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.first == boardDimension -1 and m_location.second == 0 ) {
 
         setCellKind( CellKind::BottomLeft );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second + 1 ) );
     }
     else if ( m_location.first == boardDimension -1 and m_location.second == boardDimension -1 ) {
 
         setCellKind( CellKind::BottomRight );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second - 1 ) );
     }
     else if ( m_location.first == 0 ) {
 
         setCellKind( CellKind::Top );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.first == boardDimension -1 ) {
 
         setCellKind( CellKind::Bottom );
 
-        m_adjacentLocs.push_back( make_location( m_location.first - 1 , m_location.second ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1 , m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second + 1 ) );
     }
     else if ( m_location.second  == 0 ) {
 
         setCellKind( CellKind::Left );
 
-        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
     else if ( m_location.second == boardDimension - 1 ) {
 
         setCellKind( CellKind::Right );
 
-        m_adjacentLocs.push_back( make_location( m_location.first - 1, m_location.second ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
     else {
         setCellKind( CellKind::Common );
 
-        m_adjacentLocs.push_back( make_location( m_location.first - 1 , m_location.second ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second - 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first , m_location.second + 1 ) );
-        m_adjacentLocs.push_back( make_location( m_location.first + 1, m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first - 1 , m_location.second ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second - 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first , m_location.second + 1 ) );
+        m_adjacentLocs.push_back( make_pair( m_location.first + 1, m_location.second ) );
     }
 }
 

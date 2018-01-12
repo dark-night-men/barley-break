@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "../libbreaks/cell.h"
 
+using namespace std;
+
 //unsigned int Factorial( unsigned int number ) 
 //{
 //    return number <= 1 ? number : Factorial(number-1)*number;
@@ -18,16 +20,16 @@ TEST_CASE( "loc2Index index2Loc", "[cell]" )
 {
     Board<> b;
 
-    REQUIRE( b.index2Loc( 0 ) == make_location( 0, 0 ) );
+    REQUIRE( b.index2Loc( 0 ) == pair<size_t,size_t>( 0, 0 ) );
     REQUIRE( b.loc2Index( 0, 0 ) == 0 );
 
-    REQUIRE( b.index2Loc( 1 ) == make_location( 0, 1 ) );
+    REQUIRE( b.index2Loc( 1 ) == pair<size_t,size_t>( 0, 1 ) );
     REQUIRE( b.loc2Index( 0, 1 ) == 1 );
 
-    REQUIRE( b.index2Loc( 2 ) == make_location( 1, 0 ) );
+    REQUIRE( b.index2Loc( 2 ) == pair<size_t,size_t>( 1, 0 ) );
     REQUIRE( b.loc2Index( 1, 0 ) == 2 );
 
-    REQUIRE( b.index2Loc( 3 ) == make_location( 1, 1 ) );
+    REQUIRE( b.index2Loc( 3 ) == pair<size_t,size_t>( 1, 1 ) );
     REQUIRE( b.loc2Index( 1, 1 ) == 3 );
 }
 
@@ -82,11 +84,11 @@ TEST_CASE( "Cell adjacent locations init item 2", "[cell]" )
     const Cell<> & cellRef = board.cells().at(2);
     REQUIRE( cellRef.cellKind() == CellKind::BottomLeft );
 
-    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
-    REQUIRE( cellRef.adjLocs().at(0).second == 1 );
+    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == 1 );
 
-    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 2 );
-    REQUIRE( cellRef.adjLocs().at(1).second == 0 );
+    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 2 );
+    REQUIRE( cellRef.adjLocs().at(0).second == 0 );
 }
 
 TEST_CASE( "Cell adjacent locations init item 3", "[cell]" )
@@ -96,11 +98,11 @@ TEST_CASE( "Cell adjacent locations init item 3", "[cell]" )
     const Cell<> & cellRef = board.cells().at(3);
     REQUIRE( cellRef.cellKind() == CellKind::BottomRight );
 
-    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 1 );
-    REQUIRE( cellRef.adjLocs().at(0).second == board.boardDimension() - 2 );
+    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 1 );
+    REQUIRE( cellRef.adjLocs().at(1).second == board.boardDimension() - 2 );
 
-    REQUIRE( cellRef.adjLocs().at(1).first == board.boardDimension() - 2 );
-    REQUIRE( cellRef.adjLocs().at(1).second == board.boardDimension() - 1 );
+    REQUIRE( cellRef.adjLocs().at(0).first == board.boardDimension() - 2 );
+    REQUIRE( cellRef.adjLocs().at(0).second == board.boardDimension() - 1 );
 }
 
 TEST_CASE( "Cell adjacent locations init dim 3 item 1", "[cell]" )
@@ -211,11 +213,118 @@ TEST_CASE( "Adjacent cells topology ", "[cell]" )
 {
     Board<> board;
 
-    const Cell<> & cellRef = board.cells().at(0);
+    {
+        const Cell<> & cellRef = board.cells().at(0);
 
-    const AdjacentCells<> & cells = cellRef.adjCells();
-    REQUIRE( cells.at(0)->id() == 1 );
-    REQUIRE( cells.at(1)->id() == 2 );
+        const AdjacentCells<> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 1 );
+        REQUIRE( cells.at(1)->id() == 2 );
+    }
 
+    {
+        const Cell<> & cellRef = board.cells().at(1);
+
+        const AdjacentCells<> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 0 );
+        REQUIRE( cells.at(1)->id() == 3 );
+    }
+
+    {
+        const Cell<> & cellRef = board.cells().at(2);
+
+        const AdjacentCells<> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 0 );
+        REQUIRE( cells.at(1)->id() == 3 );
+    }
+
+    {
+        const Cell<> & cellRef = board.cells().at(3);
+
+        const AdjacentCells<> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 1 );
+        REQUIRE( cells.at(1)->id() == 2 );
+    }
 }
 
+TEST_CASE( "Adjacent cells topology dim 3", "[cell]" )
+{
+    Board<3> board;
+
+    {
+        const Cell<3> & cellRef = board.cells().at(0);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 1 );
+        REQUIRE( cells.at(1)->id() == 3 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(1);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 0 );
+        REQUIRE( cells.at(1)->id() == 2 );
+        REQUIRE( cells.at(2)->id() == 4 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(2);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 1 );
+        REQUIRE( cells.at(1)->id() == 5 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(3);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 0 );
+        REQUIRE( cells.at(1)->id() == 4 );
+        REQUIRE( cells.at(2)->id() == 6 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(4);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 1 );
+        REQUIRE( cells.at(1)->id() == 3 );
+        REQUIRE( cells.at(2)->id() == 5 );
+        REQUIRE( cells.at(3)->id() == 7 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(5);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 2 );
+        REQUIRE( cells.at(1)->id() == 4 );
+        REQUIRE( cells.at(2)->id() == 8 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(6);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 3 );
+        REQUIRE( cells.at(1)->id() == 7 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(7);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 4 );
+        REQUIRE( cells.at(1)->id() == 6 );
+        REQUIRE( cells.at(2)->id() == 8 );
+    }
+
+    {
+        const Cell<3> & cellRef = board.cells().at(8);
+
+        const AdjacentCells<3> & cells = cellRef.adjCells();
+        REQUIRE( cells.at(0)->id() == 5 );
+        REQUIRE( cells.at(1)->id() == 7 );
+    }
+}
