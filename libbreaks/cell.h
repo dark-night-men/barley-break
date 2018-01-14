@@ -50,7 +50,7 @@ public:
     size_t id() const;
     void setId( size_t );
 
-    static const size_t DEFAULT_CELL_ID = -1;
+    static const size_t DEFAULT_CELL_ID ;
 
     CellKind cellKind() const;
     void setCellKind( CellKind cellKind );
@@ -60,6 +60,9 @@ public:
 
     const AdjacentLocs & adjLocs() const { return m_adjacentLocs; }
     const AdjacentCells<T_BoardDimension> & adjCells() const { return m_adjacentCells; }
+
+    size_t value() const { return m_value; }
+    void setValue( size_t v ) { m_value = v; }
 
 private:
     void initAdjacentLocs();
@@ -76,7 +79,13 @@ private:
     Board< T_BoardDimension > * m_board = nullptr;
 
     AdjacentCells<T_BoardDimension> m_adjacentCells;
+
+    size_t m_value = DEFAULT_CELL_ID;
 };
+
+template <size_t T_BoardDimension>
+const size_t Cell<T_BoardDimension>::DEFAULT_CELL_ID = -1;
+
 
 template <size_t T_BoardDimension = 2>
 class Board

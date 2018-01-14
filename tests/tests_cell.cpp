@@ -328,3 +328,15 @@ TEST_CASE( "Adjacent cells topology dim 3", "[cell]" )
         REQUIRE( cells.at(1)->id() == 7 );
     }
 }
+
+//-Init cell
+//-Init with random value
+//-Init with unique value for board
+//-Make a move
+
+TEST_CASE( "Default Cell value", "[cell]" )
+{
+    Cell<> cell;
+
+    REQUIRE( cell.value() == Cell<>::DEFAULT_CELL_ID );
+}
