@@ -6,6 +6,8 @@
 #include <cassert>
 #include <memory>
 #include <algorithm>
+#include <random>
+#include <assert.h>
 
 using namespace std;
 
@@ -16,6 +18,23 @@ std::ostream& operator << (std::ostream& strm, const std::pair<T1,T2>& p)
 {
     return strm << "[" << p.first << "," << p.second << "]";
 }
+
+template <typename T1, size_t T2>
+std::ostream& operator << (std::ostream& strm, const std::array<T1,T2>& a)
+{
+    bool cs = false;
+    for( const auto & v : a ) {
+        if ( cs ) {
+            strm << ", ";
+        }
+
+        strm << v ;
+        cs = true;
+    }
+
+    return strm;
+}
+
 
 using AdjacentLocs = vector<Location>;
 
@@ -35,6 +54,9 @@ using AdjacentCells = array<Cell<T_BoardDimension>*, MAX_ADJACENT_CELLS_NUMBER> 
 
 template <size_t T_BoardDimension = 2>
 using BoardCells = array<Cell<T_BoardDimension>, Board<T_BoardDimension>::boardSize() >;
+
+template <size_t T_BoardDimension = 2>
+using BoardValues = array<size_t, Board<T_BoardDimension>::boardSize() >;
 
 template <size_t T_BoardDimension = 2>
 class Cell
@@ -86,13 +108,11 @@ private:
 template <size_t T_BoardDimension>
 const size_t Cell<T_BoardDimension>::DEFAULT_CELL_ID = -1;
 
-
 template <size_t T_BoardDimension = 2>
 class Board
 {
-
 public:
-    Board();
+    Board( size_t seed = 2, bool genNewSeed = false );
 
     static constexpr size_t boardDimension() { return m_boardDimension; }
     static constexpr size_t boardSize() { return m_boardSize; }
@@ -104,8 +124,13 @@ public:
     const Cell<T_BoardDimension> & cellAt( size_t i ) const { return m_cells.at( i ); }
     const Cell<T_BoardDimension> & cellAt( size_t i, size_t j ) const { return m_cells.at( loc2Index( i, j ) ); }
 
+    const BoardValues<T_BoardDimension> & finalValues() const { return m_finalValues; }
+    const BoardValues<T_BoardDimension> & startValues() const { return m_startValues; }
+
 private:
     void initBoard();
+    void genStartValues();
+    void genFinalValues();
 
     friend class Cell<T_BoardDimension>;
 
@@ -115,6 +140,12 @@ private:
     static constexpr const size_t m_boardSize = T_BoardDimension*T_BoardDimension;
 
     BoardCells<T_BoardDimension> m_cells;
+    BoardValues<T_BoardDimension> m_startValues;
+    BoardValues<T_BoardDimension> m_currentValues;
+    BoardValues<T_BoardDimension> m_finalValues;
+
+    size_t m_seed = 2;
+    bool m_genNewSeed = false;
 
 public:
     const BoardCells<T_BoardDimension> & cells() const { return m_cells; }
@@ -146,7 +177,9 @@ void printCont( array<reference_wrapper<T>,N>& c )
 }
 
 template <size_t T_BoardDimension>
-Board<T_BoardDimension>::Board()
+Board<T_BoardDimension>::Board( size_t seed, bool genNewSeed )
+    : m_seed( seed )
+    , m_genNewSeed( genNewSeed )
 {
     //debug
     //for_each( m_cells.cbegin(), m_cells.cend(), []( const auto & c ) { c.printCell(); } );
@@ -164,6 +197,9 @@ void Board<T_BoardDimension>::initBoard()
         cell.init( i, this );
         ++i;
     }
+
+    genFinalValues();
+    genStartValues();
 }
 
 template <size_t T_BoardDimension>
@@ -325,3 +361,33 @@ void Cell<T_BoardDimension>::initAdjacentLocs()
 }
 
 
+template <size_t T_BoardDimension>
+void Board<T_BoardDimension>::genFinalValues()
+{
+    int c = 0;
+    //TODO check more compact version
+    generate_n ( m_finalValues.begin(), boardSize()
+        , [&c]( )
+        {
+            return c++;
+        }
+    );      
+
+    //cout << m_finalValues << endl;
+}
+
+template <size_t T_BoardDimension>
+void Board<T_BoardDimension>::genStartValues()
+{
+    if ( m_genNewSeed ) {
+        random_device seeder;
+        m_seed = seeder.entropy() ? seeder() : time(nullptr);
+    }
+
+    default_random_engine generator(
+            static_cast<default_random_engine::result_type>( m_seed ));
+            //static_cast<default_random_engine::result_type>( m_seed ));
+
+    m_startValues = m_finalValues;
+    shuffle( m_startValues.begin(), m_startValues.end(), generator );
+}

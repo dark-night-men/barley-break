@@ -26,7 +26,5 @@ using namespace std;
 
 int main()
 {
-    cout << "Hello " << endl;
-
-    Board<4> board;
+    Board<2> board;
 }

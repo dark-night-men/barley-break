@@ -333,10 +333,59 @@ TEST_CASE( "Adjacent cells topology dim 3", "[cell]" )
 //-Init with random value
 //-Init with unique value for board
 //-Make a move
+//-create won config
 
 TEST_CASE( "Default Cell value", "[cell]" )
 {
     Cell<> cell;
 
     REQUIRE( cell.value() == Cell<>::DEFAULT_CELL_ID );
+}
+
+TEST_CASE( "Final board values", "[board]" )
+{
+    Board<> b;
+    BoardValues<> finalValues{ b.finalValues() };
+
+    ostringstream strstream;
+    strstream << finalValues;
+
+    REQUIRE( strstream.str() == "0, 1, 2, 3" );
+}
+
+TEST_CASE( "Start board values. Seed values testing", "[board]" )
+{
+    {
+        Board<> b;
+        BoardValues<> startValues{ b.startValues() };
+
+        ostringstream strstream;
+        strstream << startValues;
+
+        REQUIRE( strstream.str() == "2, 0, 3, 1" );
+
+    }
+
+    {
+        Board<> b( 3 );
+        BoardValues<> startValues{ b.startValues() };
+
+        ostringstream strstream;
+        strstream << startValues;
+
+        REQUIRE( strstream.str() == "1, 3, 0, 2" );
+
+    }
+
+    {
+        Board<> b( 0 );
+        BoardValues<> startValues{ b.startValues() };
+
+        ostringstream strstream;
+        strstream << startValues;
+
+        REQUIRE( strstream.str() == "2, 0, 1, 3" );
+
+
+    }
 }
