@@ -1,3 +1,6 @@
+#ifndef CELL_H_HEADER
+#define CELL_H_HEADER
+
 #include <iostream>
 #include <array>
 #include <functional>
@@ -8,6 +11,10 @@
 #include <algorithm>
 #include <random>
 #include <assert.h>
+#include <map>
+#include <memory>
+#include <queue>
+#include <sstream>
 
 using namespace std;
 
@@ -35,6 +42,20 @@ std::ostream& operator << (std::ostream& strm, const std::array<T1,T2>& a)
     return strm;
 }
 
+template <typename T1, size_t T2>
+string array2string( const std::array<T1,T2>& a)
+{
+    ostringstream strstream;
+    strstream << a;
+
+    return strstream.str();
+}
+
+template <typename T1, size_t T2>
+void fillArrayPtr( std::array<T1*,T2>& a)
+{
+    fill(a.begin(), a.end(), nullptr );
+}
 
 using AdjacentLocs = vector<Location>;
 
@@ -87,6 +108,8 @@ public:
     void setValue( size_t v ) { m_value = v; }
 
 private:
+    friend class Board<T_BoardDimension>;
+
     void initAdjacentLocs();
     void initAdjacentCells();
 
@@ -108,6 +131,110 @@ private:
 template <size_t T_BoardDimension>
 const size_t Cell<T_BoardDimension>::DEFAULT_CELL_ID = -1;
 
+template <size_t T_BoardDimension >
+class Turn;
+
+template <size_t T_BoardDimension >
+using TurnSPtr = shared_ptr< Turn<T_BoardDimension> >;
+
+template <size_t T_BoardDimension = 2 >
+using BoardTurns = map<string, TurnSPtr<T_BoardDimension> >;
+
+template <size_t T_BoardDimension = 2 >
+using ChildrenTurns = array<TurnSPtr<T_BoardDimension>, MAX_ADJACENT_CELLS_NUMBER>;
+
+template <size_t T_BoardDimension = 2 >
+class Turn
+{
+public:
+    Turn( Board<T_BoardDimension> & board
+        , const BoardValues<T_BoardDimension> & values = BoardValues<T_BoardDimension>()
+        , const ChildrenTurns<T_BoardDimension> & childrenTurns = ChildrenTurns<T_BoardDimension>()
+        , TurnSPtr<T_BoardDimension> parent = nullptr);
+
+    Turn( Board<T_BoardDimension> & board
+        , BoardValues<T_BoardDimension> && values
+        , ChildrenTurns<T_BoardDimension> && childrenTurns = ChildrenTurns<T_BoardDimension>()
+        , TurnSPtr<T_BoardDimension> parent = nullptr);
+
+    void setChildrenTurns( const ChildrenTurns<T_BoardDimension> & childrenTurns )
+        { m_children = childrenTurns; }
+
+    void setChildrenTurns( const ChildrenTurns<T_BoardDimension> && childrenTurns )
+        { move(m_children, childrenTurns); }
+
+    void setChildrenValues( const BoardValues<T_BoardDimension> & boardValues )
+        { m_instantValues = boardValues; }
+
+    void setChildrenValues( BoardValues<T_BoardDimension> && boardValues )
+        { move( m_instantValues, boardValues); }
+
+    void setParent( const TurnSPtr<T_BoardDimension> & parent )
+        { m_parent = parent; }
+
+    void getParent( TurnSPtr<T_BoardDimension> & parent ) const
+        { parent = m_parent; }
+
+    bool hasParent() const
+        { return m_parent.operator bool(); }
+
+    bool visited() const { return m_visited; }
+    void setVisited() { m_visited = true; }
+
+    const BoardValues<T_BoardDimension> & values() const
+        { return m_instantValues; }
+
+    size_t id() const
+        { return m_turnId; }
+
+private:
+    Board<T_BoardDimension> & m_board;
+    BoardValues<T_BoardDimension> m_instantValues;
+
+    TurnSPtr<T_BoardDimension> m_parent = nullptr;
+    ChildrenTurns<T_BoardDimension> m_children;
+    size_t m_turnId;
+    static size_t m_counter;
+
+    bool m_visited = false;
+};
+
+template <size_t T_BoardDimension >
+size_t Turn<T_BoardDimension>::m_counter = 0;
+
+template <size_t T_BoardDimension >
+Turn<T_BoardDimension>::Turn( Board<T_BoardDimension> & board 
+        , const BoardValues<T_BoardDimension> & values
+        , const ChildrenTurns<T_BoardDimension> & childrenTurns
+        , TurnSPtr<T_BoardDimension> parent )
+
+    : m_board( board )
+    , m_instantValues( values )
+    , m_parent( parent )
+    , m_children( childrenTurns )
+    , m_turnId( m_counter++ )
+{
+}
+
+//template <size_t T_BoardDimension >
+//Turn<T_BoardDimension>::Turn( const Board<T_BoardDimension> & board , const BoardValues<T_BoardDimension> && values, Turn * parent );
+//    : m_board( board )
+//    , m_instantValues( values )
+//    , m_parent( parent )
+//    , m_turnId( ++m_counter )
+//{
+//}
+
+template <size_t T_BoardDimension >
+Turn<T_BoardDimension>::Turn( Board<T_BoardDimension> & board 
+        , BoardValues<T_BoardDimension> && values
+        , ChildrenTurns<T_BoardDimension> && childrenTurns
+        , TurnSPtr<T_BoardDimension> parent )
+
+    : Turn( board, values, childrenTurns, parent )
+{
+}
+
 template <size_t T_BoardDimension = 2>
 class Board
 {
@@ -126,13 +253,33 @@ public:
 
     const BoardValues<T_BoardDimension> & finalValues() const { return m_finalValues; }
     const BoardValues<T_BoardDimension> & startValues() const { return m_startValues; }
+    const BoardValues<T_BoardDimension> & currentValues() const { return m_currentValues; }
+
+    void setTurnsParent( const TurnSPtr<T_BoardDimension> & parent, ChildrenTurns<T_BoardDimension> & childrenTurns );
 
 private:
     void initBoard();
     void genStartValues();
     void genFinalValues();
+    void genChildrenValues( const BoardValues<T_BoardDimension> & values
+        , vector<BoardValues<T_BoardDimension>> & childrenValues );
+    void genChildrenTurns( const vector<BoardValues<T_BoardDimension>> & childrenValues
+        , ChildrenTurns<T_BoardDimension> & childrenTurns );
+
+    typename AdjacentCells<T_BoardDimension>::iterator m_currentAdjacentCell;
+    typename BoardCells<T_BoardDimension>::iterator m_currentCell;
+
+    bool currentAdjacentCellIsValid();
+
+    void assignValues( const BoardValues<T_BoardDimension> & values );
+    void resetCells( const BoardValues<T_BoardDimension> & values );
+    void nextValuesOfBoard( BoardValues<T_BoardDimension> & values );
+    void updateCurrentValues();
+
+    void genTurnsTree();
 
     friend class Cell<T_BoardDimension>;
+    friend class Turn<T_BoardDimension>;
 
     Cell<T_BoardDimension> * cell4Loc( const Location & loc ) { return &m_cells.data()[ loc2Index(loc) ]; }
 
@@ -147,17 +294,12 @@ private:
     size_t m_seed = 2;
     bool m_genNewSeed = false;
 
+    BoardTurns<T_BoardDimension> m_turns;
+    queue< pair<TurnSPtr<T_BoardDimension>, BoardValues<T_BoardDimension> > > m_turnsGenQueue;
+
 public:
     const BoardCells<T_BoardDimension> & cells() const { return m_cells; }
 };
-
-template <size_t T_BoardDimension = 2 >
-class Turn
-{
-    array<size_t, Board<T_BoardDimension>::boardSize()> m_cellsState;
-    const Board<T_BoardDimension> & m_board;
-};
-
 
 string cellKind2String( CellKind cellKind );
 
@@ -200,12 +342,28 @@ void Board<T_BoardDimension>::initBoard()
 
     genFinalValues();
     genStartValues();
+    genTurnsTree();
+    
+}
+
+template <size_t T_BoardDimension>
+void Board<T_BoardDimension>::setTurnsParent( const TurnSPtr<T_BoardDimension> & parent
+        , ChildrenTurns<T_BoardDimension> & childrenTurns  )
+{
+
+    for( auto & turn : childrenTurns ) {
+        if ( not turn ) break;
+
+        if ( not turn->hasParent() )
+            turn->setParent( parent );
+    }
 }
 
 template <size_t T_BoardDimension>
 Cell<T_BoardDimension>::Cell( Board<T_BoardDimension> * board )
     :m_board( board )
 {
+    fillArrayPtr( m_adjacentCells );
 }
 
 template <size_t T_BoardDimension>
@@ -391,3 +549,226 @@ void Board<T_BoardDimension>::genStartValues()
     m_startValues = m_finalValues;
     shuffle( m_startValues.begin(), m_startValues.end(), generator );
 }
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::assignValues( const BoardValues<T_BoardDimension> & values )
+{
+    typename BoardCells<T_BoardDimension>::iterator iter = m_cells.begin();
+
+    for( const auto & v : values ) {
+        assert( iter != m_cells.end() );
+
+        iter->setValue( v );
+        ++iter;
+    }
+
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::resetCells( const BoardValues<T_BoardDimension> & values )
+{
+    assignValues( values );
+    m_currentCell = find_if( m_cells.begin(), m_cells.end()
+            , []( const auto & c)
+        {
+           return c.m_value == 0; 
+        }
+    );
+
+    assert( m_currentCell != m_cells.end() );
+
+    m_currentAdjacentCell = m_currentCell->m_adjacentCells.begin();
+
+    //debug
+    //while( (*m_currentAdjacentCell) != nullptr and m_currentAdjacentCell != m_currentCell->m_adjacentCells.end() ) {
+
+    //    assert( (*m_currentAdjacentCell) != nullptr );
+    //    cout << "resetCells id : " << (*m_currentAdjacentCell)->m_id << "  val : " << (*m_currentAdjacentCell)->m_value << endl;
+    //    ++m_currentAdjacentCell;
+    //}
+
+    m_currentAdjacentCell = m_currentCell->m_adjacentCells.begin();
+
+    assert( currentAdjacentCellIsValid() );
+}
+
+template <size_t T_BoardDimension >
+bool Board<T_BoardDimension>::currentAdjacentCellIsValid()
+{
+    return (*m_currentAdjacentCell) != nullptr && m_currentAdjacentCell != m_currentCell->m_adjacentCells.end();
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::nextValuesOfBoard( BoardValues<T_BoardDimension> & values )
+{
+    assert( m_currentCell != m_cells.end() );
+    assert( currentAdjacentCellIsValid() );
+
+    //cout << m_currentCell->m_value << endl;
+    //cout << endl << "id : " << m_currentCell->m_id << " val : " << m_currentCell->m_value << endl;
+    //cout << "adjCell id : " << (*m_currentAdjacentCell)->m_id << " val : " << (*m_currentAdjacentCell)->m_value << endl;
+
+    Cell<T_BoardDimension> * currentAdjacentCell = *m_currentAdjacentCell;
+    swap( m_currentCell->m_value, currentAdjacentCell->m_value ); //SEGFAULT
+
+    updateCurrentValues();
+
+    values = m_currentValues;
+
+    //updateCurrentValues();
+
+    swap( m_currentCell->m_value, currentAdjacentCell->m_value );
+
+    ++m_currentAdjacentCell;
+
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::updateCurrentValues()
+{
+    std::transform( m_cells.cbegin(), m_cells.cend(), m_currentValues.begin()
+        , [] ( const auto & c )
+        {
+            return c.m_value;
+        }
+    );
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::genTurnsTree()
+{
+    cout << endl << "genTurnsTree started" << endl;
+    //TurnSPtr<T_BoardDimension> turn1( new Turn<T_BoardDimension>( *this, m_startValues ) );
+
+    cout << "finalValues : " << m_finalValues << endl;
+
+    auto pairIt = m_turns.insert( make_pair( array2string( m_startValues )
+        , make_shared<Turn<T_BoardDimension>>( *this, m_startValues ) ) );
+
+    assert( pairIt.second );
+
+    m_turnsGenQueue.emplace( pairIt.first->second, m_startValues );
+
+    while( not m_turnsGenQueue.empty() ) {
+
+        if ( m_turnsGenQueue.front().second != m_finalValues
+                and not m_turnsGenQueue.front().first->visited() ) {
+
+            vector<BoardValues<T_BoardDimension>> childrenValues;
+
+
+            genChildrenValues( m_turnsGenQueue.front().second, childrenValues );
+
+            ChildrenTurns<T_BoardDimension> childrenTurns;
+            genChildrenTurns( childrenValues, childrenTurns );
+
+
+            auto frontTurn = m_turnsGenQueue.front().first;
+            frontTurn->setVisited();
+            frontTurn->setChildrenTurns( childrenTurns );
+
+            setTurnsParent( frontTurn, childrenTurns );
+
+            //m_turnsGenQueue.pop();
+
+            auto vIter = childrenValues.begin();
+            for( auto & ct : childrenTurns ) {
+
+                if ( not ct ) break;
+
+                //cout << "queue emplace : " << *vIter << endl;
+                m_turnsGenQueue.emplace( ct, *vIter );
+                vIter = next( vIter );
+            }
+        } //if
+        else {
+            cout << "final or visited :  id : "
+                << m_turnsGenQueue.front().first->id()
+                << "  , values : "
+                << m_turnsGenQueue.front().first->values() << endl;
+        } //if
+
+        cout << "queue size : " << m_turnsGenQueue.size() << endl;
+        m_turnsGenQueue.pop();
+
+    } //while
+
+    cout << "genTurnsTree stoped" << endl;
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::genChildrenValues( const BoardValues<T_BoardDimension> & values
+        , vector<BoardValues<T_BoardDimension>> & childrenValues )
+{
+    //cout << endl <<  "genChildrenValues started" << endl;
+
+    assert( childrenValues.empty() );
+    resetCells( values );
+
+    cout << endl << endl  << values << endl << endl;
+
+    BoardValues<T_BoardDimension> nextValues;
+
+    while( currentAdjacentCellIsValid() ) {
+        nextValuesOfBoard( nextValues );
+        cout << nextValues << endl;
+
+        childrenValues.push_back( nextValues );
+    }
+
+    //cout << "genChildrenValues stoped" << endl;
+}
+
+template <size_t T_BoardDimension >
+void Board<T_BoardDimension>::genChildrenTurns( const vector<BoardValues<T_BoardDimension>> & childrenValues
+        , ChildrenTurns<T_BoardDimension> & childrenTurns )
+{
+    //cout << endl << "genChildrenTurns started  childrenValues.size :" << childrenValues.size() << endl;
+
+    //Turn T0( m_startValues );
+    //ChildrenValues cv = genChildrenValues( T0 );
+    //ChildrenTurns ct = genChildrenTurns( cv );
+
+
+    //TurnSPtr<T_BoardDimension> turn1( new Turn<T_BoardDimension>( *this, m_startValues ) );
+
+    typename ChildrenTurns<T_BoardDimension>::iterator iter = childrenTurns.begin();
+    for( const auto & cv : childrenValues ) {
+
+        //cout << "distance : " << distance( childrenTurns.begin(), iter ) << endl;
+        assert( distance( childrenTurns.begin(), iter ) <= childrenValues.size() ); //remove excessive ?
+
+        //if ( *iter ) {
+        //    cout << "ptr is initialled : use count " << iter->use_count() << endl;
+        //} else {
+        //    cout << "ptr is NOT initialized " << iter->use_count() << endl;
+        //}
+
+        auto cvItem = m_turns.find( array2string( cv ) );
+        if(  cvItem == m_turns.end() ) {
+
+            auto pairIt = m_turns.insert( make_pair( array2string( cv )
+                        , make_shared<Turn<T_BoardDimension>>( *this, cv ) ) );
+            assert( pairIt.second );
+
+            ( *iter ) = ( pairIt.first->second );
+
+        } else {
+            ( *iter ) = ( cvItem->second );
+        }
+
+        //if ( *iter ) {
+        //    cout << "ptr is initialled : use count " << iter->use_count() << endl;
+        //} else {
+        //    cout << "ptr is NOT initialized " << iter->use_count() << endl;
+        //}
+        //cout << endl;
+
+
+        ++iter;
+    }
+
+    //cout << "genChildrenTurns stoped" << endl;
+}
+
+#endif //CELL_H_HEADER

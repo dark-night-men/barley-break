@@ -26,5 +26,5 @@ using namespace std;
 
 int main()
 {
-    Board<2> board;
+    Board<3> board;
 }
