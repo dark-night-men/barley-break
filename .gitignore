@@ -10,3 +10,8 @@ cscope*
 tags
 
 build/
+
+GPATH
+GRTAGS
+GSYMS
+GTAGS
