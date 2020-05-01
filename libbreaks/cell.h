@@ -736,7 +736,7 @@ void Board<T_BoardDimension>::genChildrenTurns( const vector<BoardValues<T_Board
     for( const auto & cv : childrenValues ) {
 
         //cout << "distance : " << distance( childrenTurns.begin(), iter ) << endl;
-        assert( distance( childrenTurns.begin(), iter ) <= childrenValues.size() ); //remove excessive ?
+        assert( distance( childrenTurns.begin(), iter ) <= static_cast<int>( childrenValues.size() ) ); //remove excessive ?
 
         //if ( *iter ) {
         //    cout << "ptr is initialled : use count " << iter->use_count() << endl;
